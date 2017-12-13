@@ -35,29 +35,136 @@
     <script src="websocket/js/sockjs.min.js"></script>
     <script src="websocket/js/stomp.min.js"></script>
     <script src="jquery/jquery.js"></script>
+    <script src="assets/js/jquery.slimscroll.min.js"></script>
+    <script src="assets/js/jquery-ui-1.10.3.custom.min.js"></script>
     <script>
+
+        //jianlisocket连接
+        var stompClient = null;
+        function setConnected(connected) {
+            document.getElementById('connect').disabled = connected;
+            document.getElementById('disconnect').disabled = !connected;
+            document.getElementById('nickname').disabled = connected;
+            document.getElementById('span6').style.visibility = connected ? 'visible' : 'hidden';
+            $('#msgContent').val("");
+        }
+        // 开启socket连接
+        function connect() {
+            var socket = new SockJS('/socket');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                setConnected(true);
+                console.log('notice socket connected!');
+                console.log('read: /topic/roomId'+$("#roomId").val());
+//                stompClient.subscribe('/topic/notice', function (data) {
+                stompClient.subscribe('/topic/roomId'+$("#roomId").val(), function (data) {
+//                stompClient.subscribe('/topic/roomId', function (data) {
+                    var msgBody = JSON.parse(data.body);
+                    var msgHtml = "";
+                    msgHtml+='<div class="itemdiv dialogdiv">';
+                    msgHtml+='<div class="user">';
+                    msgHtml+='<img alt="Bob\'s Avatar" src="assets/avatars/avatar4.png" />';
+                    msgHtml+='</div>';
+                    msgHtml+='<div class="body">';
+                    msgHtml+='<div class="time">';
+                    msgHtml+='<i class="icon-time"></i>';
+                    msgHtml+='<span class="orange">2 min</span>';
+                    msgHtml+='</div>';
+                    msgHtml+='<div class="name">';
+                    msgHtml+='<a href="#">'+msgBody.nickname+'</a>';
+                    msgHtml+='<span class="label label-info arrowed arrowed-in-right">admin</span>';
+                    msgHtml+='</div>';
+                    msgHtml+='<div class="text">'+msgBody.msg+'</div>';
+                    msgHtml+='<div class="tools">';
+                    msgHtml+='<a href="#" class="btn btn-minier btn-info">';
+                    msgHtml+='<i class="icon-only icon-share-alt"></i>';
+                    msgHtml+='</a>';
+                    msgHtml+='</div>';
+                    msgHtml+='</div>';
+                    msgHtml+='</div>';
+                    $("#dialogs").append(msgHtml);
+                });
+            });
+        }
+        // 断开socket连接
+        function disconnect() {
+            if (stompClient != null) {
+                stompClient.disconnect();
+            }
+            setConnected(false);
+            console.log("Disconnected");
+        }
+        // 向‘/app/change-notice’服务端发送消息
+        function sendName() {
+            var value = document.getElementById('msgContent').value;
+            var map='{"roomId":"'+$("#roomId").val()+'","nickname":"'+$("#nickname").val()+'","msg":"'+value+'"}';
+            stompClient.send("/app/change-notice", {}, map);
+            //清空输入框
+            $('#msgContent').val("");
+        }
+
+        //开启监听
         var noticeSocket = function () {
             var s = new SockJS('/socket');
             var stompClient = Stomp.over(s);
             stompClient.connect({}, function () {
                 console.log('notice socket connected!');
                 stompClient.subscribe('/topic/notice', function (data) {
-                    $('#sockettest').html(data.body);
-                    //$('.message span.content').html(data.body);
+                    var msgBody = JSON.parse(data.body);
+                    var msgHtml = "";
+                    msgHtml+='<div class="itemdiv dialogdiv">';
+                    msgHtml+='<div class="user">';
+                    msgHtml+='<img alt="Bob\'s Avatar" src="assets/avatars/avatar4.png" />';
+                    msgHtml+='</div>';
+                    msgHtml+='<div class="body">';
+                    msgHtml+='<div class="time">';
+                    msgHtml+='<i class="icon-time"></i>';
+                    msgHtml+='<span class="orange">2 min</span>';
+                    msgHtml+='</div>';
+                    msgHtml+='<div class="name">';
+                    msgHtml+='<a href="#">'+msgBody.nickname+'</a>';
+                    msgHtml+='<span class="label label-info arrowed arrowed-in-right">admin</span>';
+                    msgHtml+='</div>';
+                    msgHtml+='<div class="text">'+msgBody.msg+'</div>';
+                    msgHtml+='<div class="tools">';
+                    msgHtml+='<a href="#" class="btn btn-minier btn-info">';
+                    msgHtml+='<i class="icon-only icon-share-alt"></i>';
+                    msgHtml+='</a>';
+                    msgHtml+='</div>';
+                    msgHtml+='</div>';
+                    msgHtml+='</div>';
+                    $("#dialogs").append(msgHtml);
+
                 });
             });
         };
+
+        //获取url中的参数
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&amp;)" + name + "=([^&amp;]*)(&amp;|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        }
+
         $(function(){
-            noticeSocket();
+            $("#roomId").val(getUrlParam("roomId"));
+            $('.dialogs,.comments').slimScroll({
+                height: '300px'
+            });
         });
     </script>
 
 </head>
 <body>
-    <h1>   This is chat room ! welcome !</h1>
-    <h2 id="sockettest">aa</h2>
+    <div><input  id="roomId" type="text" /></div>
+    <h3 style="margin-left: 30px">Welcome to my chat room!</h3>
+    <div style="margin-left: 30px;margin-bottom: 10px">
+        <div><input placeholder="Please enter your nickname." id="nickname" type="text" /></div>
+        <button id="connect" onclick="connect();">Connect</button>
+        <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+    </div>
     <div>
-        <div class="span6">
+        <div class="span6" id="span6" style="visibility: hidden">
             <div class="widget-box ">
                 <div class="widget-header">
                     <h4 class="lighter smaller">
@@ -66,137 +173,17 @@
                     </h4>
                 </div>
 
-                <div class="widget-body">
+                <div class="widget-body" >
                     <div class="widget-main no-padding">
-                        <div class="dialogs">
-                            <div class="itemdiv dialogdiv">
-                                <div class="user">
-                                    <img alt="Alexa's Avatar" src="assets/avatars/avatar1.png" />
-                                </div>
-
-                                <div class="body">
-                                    <div class="time">
-                                        <i class="icon-time"></i>
-                                        <span class="green">4 sec</span>
-                                    </div>
-
-                                    <div class="name">
-                                        <a href="#">Alexa</a>
-                                    </div>
-                                    <div class="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque commodo massa sed ipsum porttitor facilisis.</div>
-
-                                    <div class="tools">
-                                        <a href="#" class="btn btn-minier btn-info">
-                                            <i class="icon-only icon-share-alt"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="itemdiv dialogdiv">
-                                <div class="user">
-                                    <img alt="John's Avatar" src="assets/avatars/avatar.png" />
-                                </div>
-
-                                <div class="body">
-                                    <div class="time">
-                                        <i class="icon-time"></i>
-                                        <span class="blue">38 sec</span>
-                                    </div>
-
-                                    <div class="name">
-                                        <a href="#">John</a>
-                                    </div>
-                                    <div class="text">Raw denim you probably haven&#39;t heard of them jean shorts Austin.</div>
-
-                                    <div class="tools">
-                                        <a href="#" class="btn btn-minier btn-info">
-                                            <i class="icon-only icon-share-alt"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="itemdiv dialogdiv">
-                                <div class="user">
-                                    <img alt="Bob's Avatar" src="assets/avatars/user.jpg" />
-                                </div>
-
-                                <div class="body">
-                                    <div class="time">
-                                        <i class="icon-time"></i>
-                                        <span class="orange">2 min</span>
-                                    </div>
-
-                                    <div class="name">
-                                        <a href="#">Bob</a>
-                                        <span class="label label-info arrowed arrowed-in-right">admin</span>
-                                    </div>
-                                    <div class="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque commodo massa sed ipsum porttitor facilisis.</div>
-
-                                    <div class="tools">
-                                        <a href="#" class="btn btn-minier btn-info">
-                                            <i class="icon-only icon-share-alt"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="itemdiv dialogdiv">
-                                <div class="user">
-                                    <img alt="Jim's Avatar" src="assets/avatars/avatar4.png" />
-                                </div>
-
-                                <div class="body">
-                                    <div class="time">
-                                        <i class="icon-time"></i>
-                                        <span class="grey">3 min</span>
-                                    </div>
-
-                                    <div class="name">
-                                        <a href="#">Jim</a>
-                                    </div>
-                                    <div class="text">Raw denim you probably haven&#39;t heard of them jean shorts Austin.</div>
-
-                                    <div class="tools">
-                                        <a href="#" class="btn btn-minier btn-info">
-                                            <i class="icon-only icon-share-alt"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="itemdiv dialogdiv">
-                                <div class="user">
-                                    <img alt="Alexa's Avatar" src="assets/avatars/avatar1.png" />
-                                </div>
-
-                                <div class="body">
-                                    <div class="time">
-                                        <i class="icon-time"></i>
-                                        <span class="green">4 min</span>
-                                    </div>
-
-                                    <div class="name">
-                                        <a href="#">Alexa</a>
-                                    </div>
-                                    <div class="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
-
-                                    <div class="tools">
-                                        <a href="#" class="btn btn-minier btn-info">
-                                            <i class="icon-only icon-share-alt"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="dialogs" id="dialogs">
                         </div>
 
                         <form>
                             <div class="form-actions input-append">
-                                <input placeholder="Type your message here ..." type="text" class="width-75" name="message" />
+                                <input placeholder="Type your message here ..." id="msgContent" type="text" class="width-75" name="message" />
                                 <button class="btn btn-small btn-info no-radius" onclick="return false;">
                                     <i class="icon-share-alt"></i>
-                                    <span class="hidden-phone">Send</span>
+                                    <span class="hidden-phone" onclick="sendName();">Send</span>
                                 </button>
                             </div>
                         </form>

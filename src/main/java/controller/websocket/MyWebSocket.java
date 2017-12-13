@@ -71,14 +71,14 @@ public class MyWebSocket {
      * */
      @OnError
      public void onError(Session session, Throwable error) {
-     System.out.println("发生错误");
-     error.printStackTrace();
+         System.out.println("发生错误");
+         error.printStackTrace();
      }
 
 
      public void sendMessage(String message) throws IOException {
-     this.session.getBasicRemote().sendText(message);
-     //this.session.getAsyncRemote().sendText(message);
+         this.session.getBasicRemote().sendText(message);
+         //this.session.getAsyncRemote().sendText(message);
      }
 
 

@@ -1,5 +1,7 @@
 package controller.websocket;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -27,7 +29,12 @@ public class GreetingController {
     }
     @MessageMapping("/change-notice")
     public void greeting(String value){
-        this.simpMessagingTemplate.convertAndSend("/topic/notice", value);
+        JSONObject msg = JSON.parseObject(value);
+        System.out.println("msg"+msg.toString());
+        System.out.println("sndto: /topic/roomId"+msg.getString("roomId"));
+//        this.simpMessagingTemplate.convertAndSend("/topic/notice", value);
+//        this.simpMessagingTemplate.convertAndSend("/topic/roomId", value);
+        this.simpMessagingTemplate.convertAndSend("/topic/roomId"+msg.getString("roomId"), value);
     }
 
     /**
