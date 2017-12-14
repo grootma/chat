@@ -12,4 +12,9 @@ public class ChatRoom {
     public String chat() {
         return "chat_room";
     }
+
+    @RequestMapping("/createChat")
+    public String createChat() {
+        return "createChat";
+    }
 }

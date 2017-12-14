@@ -156,12 +156,21 @@
 
 </head>
 <body>
-    <div><input  id="roomId" type="text" /></div>
+    <div><input  id="roomId" type="text" type="hidden"/></div>
     <h3 style="margin-left: 30px">Welcome to my chat room!</h3>
     <div style="margin-left: 30px;margin-bottom: 10px">
-        <div><input placeholder="Please enter your nickname." id="nickname" type="text" /></div>
-        <button id="connect" onclick="connect();">Connect</button>
-        <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+
+        <div><input placeholder="Please enter your nickname." id="nickname" type="text" class="form-control" /></div>
+        <div class="col-md-offset-3 col-md-9">
+            <button id="connect" onclick="connect();" class="btn btn-info" type="button">
+                <i class="ace-icon fa fa-check bigger-110"></i>
+                Connect
+            </button>
+            <button id="disconnect" disabled="disabled" onclick="disconnect();" type="reset" class="btn">
+                <i class="ace-icon fa fa-undo bigger-110"></i>
+                Disconnect
+            </button>
+        </div>
     </div>
     <div>
         <div class="span6" id="span6" style="visibility: hidden">
