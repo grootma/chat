@@ -18,6 +18,6 @@ public class TestBootController {
 
     @RequestMapping("/test")
     public String test() {
-        return "testsucees";
+        return "testsucs";
     }
 }

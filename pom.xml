@@ -28,6 +28,7 @@
       <scope>provided</scope>
       <!--optional我没弄明白，都说必须为true，但我测试true，false，不加都可以-->
       <optional>true</optional>
+      <!--<scope>runtime</scope>-->
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -43,6 +44,13 @@
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
       <version>1.2.42</version>
+    </dependency>
+
+    <!--因配置外部TOMCAT 而配置-->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-tomcat</artifactId>
+      <scope>provided</scope>
     </dependency>
 
 

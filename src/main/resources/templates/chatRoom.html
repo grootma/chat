@@ -83,6 +83,7 @@
                     msgHtml+='</div>';
                     msgHtml+='</div>';
                     $("#dialogs").append(msgHtml);
+                    $(".dialogs").scrollTop($(".dialogs")[0].scrollHeight);
                 });
             });
         }
@@ -147,7 +148,7 @@
         }
 
         $(function(){
-            $("#roomId").val(getUrlParam("roomId"));
+            $("#roomId").val(getUrlParam("roomNo"));
             $('.dialogs,.comments').slimScroll({
                 height: '300px'
             });
@@ -156,7 +157,7 @@
 
 </head>
 <body>
-    <div><input  id="roomId" type="text" type="hidden"/></div>
+    <div><input  id="roomId" type="hidden" /></div>
     <h3 style="margin-left: 30px">Welcome to my chat room!</h3>
     <div style="margin-left: 30px;margin-bottom: 10px">
 
@@ -164,7 +165,7 @@
         <div class="col-md-offset-3 col-md-9">
             <button id="connect" onclick="connect();" class="btn btn-info" type="button">
                 <i class="ace-icon fa fa-check bigger-110"></i>
-                Connect
+                Connectsdas
             </button>
             <button id="disconnect" disabled="disabled" onclick="disconnect();" type="reset" class="btn">
                 <i class="ace-icon fa fa-undo bigger-110"></i>

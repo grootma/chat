@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ChatRoom {
     @RequestMapping("/chat")
     public String chat() {
-        return "chat_room";
+        return "chatRoom";
     }
 
     @RequestMapping("/createChat")
     public String createChat() {
-        return "createChat";
+        return "index";
     }
 }

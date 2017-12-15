@@ -2,24 +2,44 @@
 <html>
 <head>
     <title>Chat Room</title>
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/ace.min.css" />
+    <link rel="stylesheet" href="assets/css/ace-responsive.min.css" />
+    <link rel="stylesheet" href="assets/css/ace-skins.min.css" />
+    <link rel="stylesheet" href="assets/css/ace-ie.min.css" />
+    <script src="jquery/jquery.js"></script>
+    <script src="assets/js/jquery-ui-1.10.3.custom.min.js"></script>
     <script>
-
+        function goChat() {
+           /* var roomNo = $("#roomNo").val();
+            if(roomNo){
+                var ival = parseInt(roomNo);//如果变量val是字符类型的数则转换为int类型 如果不是则ival为NaN
+                if(isNaN(ival)){
+                    $("#roomNo").focus();
+                    return;
+                }
+            }else {
+                $(this).tip("请输入房间号！");
+                return;
+            }*/
+            window.location.href="chat?roomNo="+$("#roomNo").val();
+        }
     </script>
 
 </head>
 
     <body>
         <div>
-            <div>
-                <div class="wizard-actions">
-                    <button class="btn btn-prev" disabled="disabled">
-                        <i class="ace-icon fa fa-arrow-left"></i>
-                        Create Room
+            <div style="margin-left: 30px;margin-bottom: 10px;margin-top: 50px">
+                <div><input placeholder="Please enter your roomNo." id="roomNo" type="text" class="form-control" /></div>
+                <div class="col-md-offset-3 col-md-9">
+                    <button id="connect" onclick="goChat();" class="btn btn-info" type="button">
+                        <i class="ace-icon fa fa-check bigger-110"></i>
+                        Create Chat
                     </button>
-
-                    <button class="btn btn-success btn-next" data-last="Finish">
-                        Join Room
-                        <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
+                    <button id="disconnect" disabled="disabled" onclick="goChat();" type="reset" class="btn">
+                        <i class="ace-icon fa fa-undo bigger-110"></i>
+                        Join Chat
                     </button>
                 </div>
             </div>
