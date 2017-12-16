@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 
@@ -23,18 +22,15 @@ import javax.annotation.Resource;
 public class GreetingController {
     @Resource
     private SimpMessagingTemplate simpMessagingTemplate;
-    @RequestMapping("/helloSocket")
-    public String index(){
-        return "index";
-    }
+
     @MessageMapping("/change-notice")
     public void greeting(String value){
+        simpMessagingTemplate.setSendTimeout(1000);
         JSONObject msg = JSON.parseObject(value);
-        System.out.println("msg"+msg.toString());
+        System.out.println("recived "+msg.getString("nickname")+" to"+msg.getString("roomId")+" msg:"+msg.toString());
         System.out.println("sndto: /topic/roomId"+msg.getString("roomId"));
-//        this.simpMessagingTemplate.convertAndSend("/topic/notice", value);
-//        this.simpMessagingTemplate.convertAndSend("/topic/roomId", value);
         this.simpMessagingTemplate.convertAndSend("/topic/roomId"+msg.getString("roomId"), value);
+//        this.simpMessagingTemplate.convertAndSend("/topic/notice", value);
     }
 
     /**
