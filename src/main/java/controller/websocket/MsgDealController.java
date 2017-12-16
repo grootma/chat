@@ -19,7 +19,7 @@ import javax.annotation.Resource;
  * 前面我们全局配置中指定了服务端接收的连接以 app大头，所以客户端发送公告的请求连接应该是/app/change-notice。
  */
 @Controller
-public class GreetingController {
+public class MsgDealController {
     @Resource
     private SimpMessagingTemplate simpMessagingTemplate;
 
