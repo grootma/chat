@@ -56,9 +56,7 @@
                 setConnected(true);
                 console.log('notice socket connected!');
                 console.log('read: /topic/roomId'+$("#roomId").val());
-//                stompClient.subscribe('/topic/notice', function (data) {
                 stompClient.subscribe('/topic/roomId'+$("#roomId").val(), function (data) {
-//                stompClient.subscribe('/topic/roomId', function (data) {
                     var msgBody = JSON.parse(data.body);
                     var msgHtml = "";
                     msgHtml+='<div class="itemdiv dialogdiv">';
@@ -96,12 +94,19 @@
             console.log("Disconnected");
         }
         // 向‘/app/change-notice’服务端发送消息
-        function sendName() {
+        function sendMsg() {
+            console.log("sendMsg start...")
             var value = document.getElementById('msgContent').value;
-            var map='{"roomId":"'+$("#roomId").val()+'","nickname":"'+$("#nickname").val()+'","msg":"'+value+'"}';
-            stompClient.send("/app/change-notice", {}, map);
-            //清空输入框
-            $('#msgContent').val("");
+            if(value){
+                var map='{"roomId":"'+$("#roomId").val()+'","nickname":"'+$("#nickname").val()+'","msg":"'+value+'"}';
+                console.log("send start...")
+                stompClient.send("/app/change-notice", {}, map);
+                console.log("send end...")
+                //清空输入框
+                $('#msgContent').val("");
+                $("#msgContent").focus();
+                console.log("sendMsg end...")
+            }
         }
 
         //开启监听
@@ -147,11 +152,20 @@
             if (r != null) return unescape(r[2]); return null; //返回参数值
         }
 
+        //回车监控事件
+        $('#msgContent').keydown(function(e){
+            if(e.keyCode==13){
+                console.log("回车事件。。。")
+                sendMsg();//处理事件
+            }
+        });
+
         $(function(){
             $("#roomId").val(getUrlParam("roomNo"));
             $('.dialogs,.comments').slimScroll({
-                height: '300px'
+                height: '500px'
             });
+
         });
     </script>
 
@@ -189,11 +203,11 @@
                         </div>
 
                         <form>
-                            <div class="form-actions input-append">
+                            <div class="form-actions input-append" onclick="return false;">
                                 <input placeholder="Type your message here ..." id="msgContent" type="text" class="width-75" name="message" />
-                                <button class="btn btn-small btn-info no-radius" onclick="return false;">
+                                <button class="btn btn-small btn-info no-radius" onclick="sendMsg();">
                                     <i class="icon-share-alt"></i>
-                                    <span class="hidden-phone" onclick="sendName();">Send</span>
+                                    <span class="hidden-phone" >Send</span>
                                 </button>
                             </div>
                         </form>
