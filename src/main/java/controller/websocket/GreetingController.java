@@ -30,10 +30,8 @@ public class GreetingController {
     @MessageMapping("/change-notice")
     public void greeting(String value){
         JSONObject msg = JSON.parseObject(value);
-        System.out.println("msg"+msg.toString());
-        System.out.println("sndto: /topic/roomId"+msg.getString("roomId"));
+        System.out.println("nick:"+msg.getString("nickname")+":-->"+msg.toString()+"-->sndto: /topic/roomId"+msg.getString("roomId"));
 //        this.simpMessagingTemplate.convertAndSend("/topic/notice", value);
-//        this.simpMessagingTemplate.convertAndSend("/topic/roomId", value);
         this.simpMessagingTemplate.convertAndSend("/topic/roomId"+msg.getString("roomId"), value);
     }
 
