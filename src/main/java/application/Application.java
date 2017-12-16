@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Created by Administrator on 2017/12/10.
+ * 开启扫描多个包时可以这么写
+ * @ComponentScan(basePackages = {"controller","service"})
  */
 @Configuration
 @EnableAutoConfiguration

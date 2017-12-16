@@ -22,7 +22,7 @@
                 $(this).tip("请输入房间号！");
                 return;
             }*/
-            window.location.href="chat?roomNo="+$("#roomNo").val();
+            window.location.href="/chat_room/chat?roomNo="+$("#roomNo").val();
         }
     </script>
 
@@ -37,7 +37,7 @@
                         <i class="ace-icon fa fa-check bigger-110"></i>
                         Create Chat
                     </button>
-                    <button id="disconnect" disabled="disabled" onclick="goChat();" type="reset" class="btn">
+                    <button id="disconnect"  onclick="goChat();" type="reset" class="btn btn-info">
                         <i class="ace-icon fa fa-undo bigger-110"></i>
                         Join Chat
                     </button>

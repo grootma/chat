@@ -50,12 +50,12 @@
         }
         // 开启socket连接
         function connect() {
-            var socket = new SockJS('/socket');
+            var socket = new SockJS('/chat_room/socket');
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
                 setConnected(true);
                 console.log('notice socket connected!');
-                console.log('read: /topic/roomId'+$("#roomId").val());
+                console.log('read: /chat_room/topic/roomId'+$("#roomId").val());
                 stompClient.subscribe('/topic/roomId'+$("#roomId").val(), function (data) {
                     var msgBody = JSON.parse(data.body);
                     var msgHtml = "";
@@ -170,51 +170,51 @@
     </script>
 
 </head>
-<body>
-    <div><input  id="roomId" type="hidden" /></div>
-    <h3 style="margin-left: 30px">Welcome to my chat room!</h3>
-    <div style="margin-left: 30px;margin-bottom: 10px">
+    <body>
+        <div><input  id="roomId" type="hidden" /></div>
+        <h3 style="margin-left: 30px">Welcome to my chat room!</h3>
+        <div style="margin-left: 30px;margin-bottom: 10px">
 
-        <div><input placeholder="Please enter your nickname." id="nickname" type="text" class="form-control" /></div>
-        <div class="col-md-offset-3 col-md-9">
-            <button id="connect" onclick="connect();" class="btn btn-info" type="button">
-                <i class="ace-icon fa fa-check bigger-110"></i>
-                Connectsdas
-            </button>
-            <button id="disconnect" disabled="disabled" onclick="disconnect();" type="reset" class="btn">
-                <i class="ace-icon fa fa-undo bigger-110"></i>
-                Disconnect
-            </button>
+            <div><input placeholder="Please enter your nickname." id="nickname" type="text" class="form-control" /></div>
+            <div class="col-md-offset-3 col-md-9">
+                <button id="connect" onclick="connect();" class="btn btn-info" type="button">
+                    <i class="ace-icon fa fa-check bigger-110"></i>
+                    Connect
+                </button>
+                <button id="disconnect" disabled="disabled" onclick="disconnect();" type="reset" class="btn">
+                    <i class="ace-icon fa fa-undo bigger-110"></i>
+                    Disconnect
+                </button>
+            </div>
         </div>
-    </div>
-    <div>
-        <div class="span6" id="span6" style="visibility: hidden">
-            <div class="widget-box ">
-                <div class="widget-header">
-                    <h4 class="lighter smaller">
-                        <i class="icon-comment blue"></i>
-                        Conversation
-                    </h4>
-                </div>
+        <div>
+            <div class="span6" id="span6" style="visibility: hidden">
+                <div class="widget-box ">
+                    <div class="widget-header">
+                        <h4 class="lighter smaller">
+                            <i class="icon-comment blue"></i>
+                            Conversation
+                        </h4>
+                    </div>
 
-                <div class="widget-body" >
-                    <div class="widget-main no-padding">
-                        <div class="dialogs" id="dialogs">
-                        </div>
-
-                        <form>
-                            <div class="form-actions input-append" onclick="return false;">
-                                <input placeholder="Type your message here ..." id="msgContent" type="text" class="width-75" name="message" />
-                                <button class="btn btn-small btn-info no-radius" onclick="sendMsg();">
-                                    <i class="icon-share-alt"></i>
-                                    <span class="hidden-phone" >Send</span>
-                                </button>
+                    <div class="widget-body" >
+                        <div class="widget-main no-padding">
+                            <div class="dialogs" id="dialogs">
                             </div>
-                        </form>
-                    </div><!--/widget-main-->
-                </div><!--/widget-body-->
-            </div><!--/widget-box-->
-        </div><!--/span-->
-    </div><!--/row-->
-</body>
+
+                            <form>
+                                <div class="form-actions input-append" onclick="return false;">
+                                    <input placeholder="Type your message here ..." id="msgContent" type="text" class="width-75" name="message" />
+                                    <button class="btn btn-small btn-info no-radius" onclick="sendMsg();">
+                                        <i class="icon-share-alt"></i>
+                                        <span class="hidden-phone" >Send</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div><!--/widget-main-->
+                    </div><!--/widget-body-->
+                </div><!--/widget-box-->
+            </div><!--/span-->
+        </div><!--/row-->
+    </body>
 </html>
