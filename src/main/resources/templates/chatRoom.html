@@ -34,11 +34,47 @@
 
     <script src="websocket/js/sockjs.min.js"></script>
     <script src="websocket/js/stomp.min.js"></script>
-    <script src="jquery/jquery.js"></script>
+    <script src="jquery/js/jquery.js"></script>
     <script src="assets/js/jquery.slimscroll.min.js"></script>
     <script src="assets/js/jquery-ui-1.10.3.custom.min.js"></script>
-    <script>
+    <style>
+        .span6{
+            width: 50%;
+            margin-left: 25%;
+        }
+        .css_center{
+            text-align: center;
+        }
 
+        /*选择头像样式 start*/
+        .portrait {position:absolute; z-index:100; margin-top:-65px;margin-left:20px;}
+        .portrait ul {padding:0; margin:0; list-style-type: none; }
+        .portrait ul li {width:50px; text-align:left;margin-bottom: 5px}
+        * html .portrait ul li {width:235px; margin-left:-16px; mar\gin-left:0;}
+        /*.portrait ul li a, .portrait ul li a:visited {display:block; text-decoration:none; width:15px; padding:10px; background:transparent url(/imagesforcode/201301/tab1.gif) top right; height:80px; text-align:center; border-left:1px solid #000;}*/
+        .portrait ul li a, .portrait ul li a:visited {display:block; text-decoration:none; width:15px; padding:10px; height:80px; text-align:center; border-left:1px solid #000;}
+        * html .portrait ul li a, * html .portrait ul li a:visited {width:35px; height:100px; w\idth:15px; he\ight:80px;}
+        table {margin:0; padding:0; border:0; border-collapse:collapse;font-size:1em;}
+        .portrait ul li ul {visibility:hidden; position:absolute; width:190px; top:0; left:0;}
+        .portrait ul li:hover {position:relative;}
+        .portrait ul li:hover a {padding-left:200px;display:none}
+        .portrait ul li a:hover {padding-left:201px; position:relative; z-index:200; border-left:0;}
+        .portrait ul li:hover ul,
+        .portrait ul li a:hover ul {visibility:visible; z-index:300;}
+        /* / */
+        .portrait ul li:hover ul li a,
+        /*.portrait ul li a:hover ul li a {display:block; background:#d8e2e2 url(/imagesforcode/201301/fade.gif); color:#888; text-align:left; height:auto; padding:5px; border:1px solid #000; border-width:1px 1px 0 1px; width:190px; w\idth:180px;}*/
+        .portrait ul li a:hover ul li a {display:block;  color:#888; text-align:left; height:auto; padding:5px; border:1px solid #000; border-width:1px 1px 0 1px; width:190px; w\idth:180px;}
+        .portrait ul li:hover ul li a.last,
+        .portrait ul li a:hover ul li a.last {border-bottom:1px solid #000;}
+        .portrait ul li:hover ul li a:hover,
+        .portrait ul li a:hover ul li a:hover {background:#e8f2f2; color:#000;}
+        /*选择头像样式 end*/
+
+    </style>
+    <script>
+        /*全局变量*/
+        var portrait_src = "assets/avatars/car_7.jpg";//默认头像
         //jianlisocket连接
         var stompClient = null;
         function setConnected(connected) {
@@ -50,6 +86,12 @@
         }
         // 开启socket连接
         function connect() {
+            var nickname = $("#nickname").val();
+            if(!nickname){
+                $("#nickname_errormsg").html("亲，请输入昵称! ^_^").show(300).delay(3000).hide(300);
+                $("#nickname").focus();
+                return false;
+            }
             var socket = new SockJS('/chat_room/socket');
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
@@ -58,28 +100,54 @@
                 console.log('read: /chat_room/topic/roomId'+$("#roomId").val());
                 stompClient.subscribe('/topic/roomId'+$("#roomId").val(), function (data) {
                     var msgBody = JSON.parse(data.body);
+                    var msgUuid = msgBody.userId;
                     var msgHtml = "";
-                    msgHtml+='<div class="itemdiv dialogdiv">';
-                    msgHtml+='<div class="user">';
-                    msgHtml+='<img alt="Bob\'s Avatar" src="assets/avatars/avatar4.png" />';
-                    msgHtml+='</div>';
-                    msgHtml+='<div class="body">';
-                    msgHtml+='<div class="time">';
-                    msgHtml+='<i class="icon-time"></i>';
-                    msgHtml+='<span class="orange">2 min</span>';
-                    msgHtml+='</div>';
-                    msgHtml+='<div class="name">';
-                    msgHtml+='<a href="#">'+msgBody.nickname+'</a>';
-                    msgHtml+='<span class="label label-info arrowed arrowed-in-right">admin</span>';
-                    msgHtml+='</div>';
-                    msgHtml+='<div class="text">'+msgBody.msg+'</div>';
-                    msgHtml+='<div class="tools">';
-                    msgHtml+='<a href="#" class="btn btn-minier btn-info">';
-                    msgHtml+='<i class="icon-only icon-share-alt"></i>';
-                    msgHtml+='</a>';
-                    msgHtml+='</div>';
-                    msgHtml+='</div>';
-                    msgHtml+='</div>';
+//                    TODO
+//                    if(msgUuid!=$("#userId").val()){//别人的消息
+                        msgHtml+='<div class="itemdiv dialogdiv">';
+                        msgHtml+='<div class="user">';
+                        msgHtml+='<img class="user_portrait" alt="Bob\'s Avatar" src="'+msgBody.portrait_src+'" />';
+                        msgHtml+='</div>';
+                        msgHtml+='<div class="body">';
+                        msgHtml+='<div class="time">';
+                        msgHtml+='<i class="icon-time"></i>';
+                        msgHtml+='<span class="orange">'+msgBody.msg_time+'</span>';
+                        msgHtml+='</div>';
+                        msgHtml+='<div class="name">';
+                        msgHtml+='<a href="#">'+msgBody.nickname+'</a>';
+                        msgHtml+='<span class="label label-info arrowed arrowed-in-right" style="display: none;">admin</span>';
+                        msgHtml+='</div>';
+                        msgHtml+='<div class="text">'+msgBody.msg+'</div>';
+                        msgHtml+='<div class="tools" style="display: none;">';
+                        msgHtml+='<a href="#" class="btn btn-minier btn-info">';
+                        msgHtml+='<i class="icon-only icon-share-alt"></i>';
+                        msgHtml+='</a>';
+                        msgHtml+='</div>';
+                        msgHtml+='</div>';
+                        msgHtml+='</div>';
+//                    }else{//自己的消息
+//                        msgHtml+='<div class="itemdiv dialogdiv">';
+//                        msgHtml+='  <div class="body">';
+//                        msgHtml+='      <div class="time">';
+//                        msgHtml+='          <i class="icon-time"></i>';
+//                        msgHtml+='          <span class="orange">'+msgBody.msg_time+'</span>';
+//                        msgHtml+='      </div>';
+//                        msgHtml+='      <div class="name">';
+//                        msgHtml+='          <a href="#">'+msgBody.nickname+'</a>';
+//                        msgHtml+='          <span class="label label-info arrowed arrowed-in-right" style="display: none;">admin</span>';
+//                        msgHtml+='      </div>';
+//                        msgHtml+='      <div class="text">'+msgBody.msg+'</div>';
+//                        msgHtml+='      <div class="tools" style="display: none;">';
+//                        msgHtml+='          <a href="#" class="btn btn-minier btn-info">';
+//                        msgHtml+='              <i class="icon-only icon-share-alt"></i>';
+//                        msgHtml+='          </a>';
+//                        msgHtml+='      </div>';
+//                        msgHtml+='  </div>';
+//                        msgHtml+='  <div class="user">';
+//                        msgHtml+='      <img alt="Bob\'s Avatar" src="assets/avatars/avatar4.png" />';
+//                        msgHtml+='  </div>';
+//                        msgHtml+='</div>';
+//                    }
                     $("#dialogs").append(msgHtml);
                     $(".dialogs").scrollTop($(".dialogs")[0].scrollHeight);
                 });
@@ -95,55 +163,16 @@
         }
         // 向‘/app/change-notice’服务端发送消息
         function sendMsg() {
-            console.log("sendMsg start...")
             var value = document.getElementById('msgContent').value;
             if(value){
-                var map='{"roomId":"'+$("#roomId").val()+'","nickname":"'+$("#nickname").val()+'","msg":"'+value+'"}';
-                console.log("send start...")
+                var map='{"roomId":"'+$("#roomId").val()+'","nickname":"'+$("#nickname").val()+'","msg":"'
+                    +value+'","userId":"'+$("#userId").val()+'","portrait_src":"'+portrait_src+'"}';
                 stompClient.send("/app/change-notice", {}, map);
-                console.log("send end...")
                 //清空输入框
                 $('#msgContent').val("");
-                console.log("sendMsg end...")
             }
             $("#msgContent").focus();
         }
-
-        //开启监听
-       /* var noticeSocket = function () {
-            var s = new SockJS('/socket');
-            var stompClient = Stomp.over(s);
-            stompClient.connect({}, function () {
-                console.log('notice socket connected!');
-                stompClient.subscribe('/topic/notice', function (data) {
-                    var msgBody = JSON.parse(data.body);
-                    var msgHtml = "";
-                    msgHtml+='<div class="itemdiv dialogdiv">';
-                    msgHtml+='<div class="user">';
-                    msgHtml+='<img alt="Bob\'s Avatar" src="assets/avatars/avatar4.png" />';
-                    msgHtml+='</div>';
-                    msgHtml+='<div class="body">';
-                    msgHtml+='<div class="time">';
-                    msgHtml+='<i class="icon-time"></i>';
-                    msgHtml+='<span class="orange">2 min</span>';
-                    msgHtml+='</div>';
-                    msgHtml+='<div class="name">';
-                    msgHtml+='<a href="#">'+msgBody.nickname+'</a>';
-                    msgHtml+='<span class="label label-info arrowed arrowed-in-right">admin</span>';
-                    msgHtml+='</div>';
-                    msgHtml+='<div class="text">'+msgBody.msg+'</div>';
-                    msgHtml+='<div class="tools">';
-                    msgHtml+='<a href="#" class="btn btn-minier btn-info">';
-                    msgHtml+='<i class="icon-only icon-share-alt"></i>';
-                    msgHtml+='</a>';
-                    msgHtml+='</div>';
-                    msgHtml+='</div>';
-                    msgHtml+='</div>';
-                    $("#dialogs").append(msgHtml);
-
-                });
-            });
-        };*/
 
         //获取url中的参数
         function getUrlParam(name) {
@@ -160,22 +189,29 @@
             }
         });
 
+        function chengePortrait(obj) {
+            portrait_src=$(obj).children().attr("src");
+            $(".user_portrait").attr("src",portrait_src);
+        }
+
         $(function(){
             $("#roomId").val(getUrlParam("roomNo"));
             $('.dialogs,.comments').slimScroll({
                 height: '500px'
             });
-
         });
     </script>
 
 </head>
-    <body>
-        <div><input  id="roomId" type="hidden" /></div>
-        <h3 style="margin-left: 30px">Welcome to my chat room!</h3>
-        <div style="margin-left: 30px;margin-bottom: 10px">
-
+    <body >
+        <div>
+            <input  id="roomId" type="hidden" />
+            <input  id="userId" type="hidden" value="${userId}"/>
+        </div>
+        <h3 class="css_center" style="">Welcome to chat room!</h3>
+        <div class="css_center" style="margin-bottom: 10px;">
             <div><input placeholder="Please enter your nickname." id="nickname" type="text" class="form-control" /></div>
+            <h2 class="lighter smaller" id="nickname_errormsg"></h2>
             <div class="col-md-offset-3 col-md-9">
                 <button id="connect" onclick="connect();" class="btn btn-info" type="button">
                     <i class="ace-icon fa fa-check bigger-110"></i>
@@ -187,8 +223,38 @@
                 </button>
             </div>
         </div>
+        <!--选择头像-->
+        <div class="portrait">
+            <ul >
+                <li><a href="#javascript">更换头像<!--[if IE 7]><!--></a><!--<![endif]-->
+                    <ul >
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/car_1.jpg"/></li>
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/car_2.jpg"/></li>
+                        <!--<li onclick="chengePortrait(this)"><img  src="assets/avatars/car_3.jpg"/></li>
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/car_4.jpg"/></li>
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/car_5.jpg"/></li>
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/car_6.jpg"/></li>-->
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/car_7.jpg"/></li>
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/girl_1.jpg"/></li>
+                       <!-- <li onclick="chengePortrait(this)"><img  src="assets/avatars/girl_2.jpg"/></li>-->
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/fj_1.jpg"/></li>
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/fj_2.jpg"/></li>
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/fj_3.jpg"/></li>
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/fj_4.jpg"/></li>
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/fj_5.jpg"/></li>
+                        <!--<li onclick="chengePortrait(this)"><img  src="assets/avatars/fj_6.jpg"/></li>-->
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/avatar.png"/></li>
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/avatar1.png"/></li>
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/avatar3.png"/></li>
+                        <li onclick="chengePortrait(this)"><img  src="assets/avatars/avatar4.png"/></li>
+                        <!--<li><img  class="portrait_img" src="assets/avatars/avatar2.png"/></li>-->
+                        <!--<li><img  class="portrait_img" src="assets/avatars/user.jpg"/></li>-->
+                    </ul>
+                </li>
+            </ul>
+        </div>
         <div>
-            <div class="span6" id="span6" style="visibility: hidden">
+            <div class="span6 newspan" id="span6" style="visibility: hidden;">
                 <div class="widget-box ">
                     <div class="widget-header">
                         <h4 class="lighter smaller">

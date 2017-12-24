@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     public Map<String,Object> exceptionHandler(RuntimeException e){
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("errorCode", "500");
-        map.put("errorMsg", "亲，系統错误，请反馈给 工程师groot!");
+        map.put("errorMsg", "亲，系統繁忙，请反馈给 工程师groot!");
         e.printStackTrace();
         return map;
     }

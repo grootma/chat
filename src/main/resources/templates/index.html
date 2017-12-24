@@ -7,8 +7,13 @@
     <link rel="stylesheet" href="assets/css/ace-responsive.min.css" />
     <link rel="stylesheet" href="assets/css/ace-skins.min.css" />
     <link rel="stylesheet" href="assets/css/ace-ie.min.css" />
-    <script src="jquery/jquery.js"></script>
+    <script src="jquery/js/jquery.js"></script>
     <script src="assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <style>
+        body{ text-align:center}
+        /*.div{ margin:0 auto; width:400px; height:100px; border:1px solid #F00}*/
+        /* css注释：为了观察效果设置宽度 边框 高度等样式 */
+    </style>
     <script>
         function goChat() {
            /* var roomNo = $("#roomNo").val();
@@ -22,6 +27,12 @@
                 $(this).tip("请输入房间号！");
                 return;
             }*/
+            var roomNo = $("#roomNo").val();
+            if(!roomNo){
+                $("#roomNo_errormsg").html("亲，请输入房间号! ^_^").show(300).delay(3000).hide(300);
+                $("#roomNo").focus();
+                return false;
+            }
             window.location.href="/chat_room/chat?roomNo="+$("#roomNo").val();
         }
     </script>
@@ -32,6 +43,7 @@
         <div>
             <div style="margin-left: 30px;margin-bottom: 10px;margin-top: 50px">
                 <div><input placeholder="Please enter your roomNo." id="roomNo" type="text" class="form-control" /></div>
+                <h2 class="lighter smaller" id="roomNo_errormsg"></h2>
                 <div class="col-md-offset-3 col-md-9">
                     <button id="connect" onclick="goChat();" class="btn btn-info" type="button">
                         <i class="ace-icon fa fa-check bigger-110"></i>
@@ -45,6 +57,5 @@
             </div>
         </div>
     </body>
-
 
 </html>

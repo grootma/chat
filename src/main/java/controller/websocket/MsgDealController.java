@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import tools.TimeTool;
 
 import javax.annotation.Resource;
 
@@ -24,12 +25,12 @@ public class MsgDealController {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @MessageMapping("/change-notice")
-    public void greeting(String value){
+    public void  MsgDeal(String value){
         simpMessagingTemplate.setSendTimeout(1000);
         JSONObject msg = JSON.parseObject(value);
-        System.out.println("recived "+msg.getString("nickname")+" to"+msg.getString("roomId")+" msg:"+msg.toString());
-        System.out.println("sndto: /topic/roomId"+msg.getString("roomId"));
-        this.simpMessagingTemplate.convertAndSend("/topic/roomId"+msg.getString("roomId"), value);
+        msg.put("msg_time", TimeTool.getTime());
+        this.simpMessagingTemplate.convertAndSend("/topic/roomId"+msg.getString("roomId"), msg.toString());
+        System.out.println("sndto: /topic/roomId"+msg.getString("roomId -->")+msg);
     }
 
     /**
